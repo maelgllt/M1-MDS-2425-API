@@ -4,6 +4,7 @@
 
 - Node.js / Express
 - JWT (Json Web Token) : pour l'authentification
+- BDD : MySQL
 - Swagger : pour la documentation
 
 ## Architecture
