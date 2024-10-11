@@ -20,3 +20,18 @@
   - /tools/password-generator: Générateur de mot de passe sécurisé.
   - /tools/identity-generator: Générer des identités fictives.
 - /admin: Pour la gestion des logs et les droits.
+
+## Infos
+### Register
+Inscription avec un email, mot de passe (et roleId).
+```json
+{
+  "email": "admin@gmail.fr",
+  "password": "admin",
+  "roleId": 1
+}
+```
+Le roleId est optionel car si on ne le met pas, la valeur sera "2". 
+roleId : 1 => admin
+roleId : 2 => user
+
