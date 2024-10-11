@@ -17,6 +17,7 @@
   - /tools/password-check: Vérifier si un mot de passe fait partie des plus courants.
   - /tools/domain-info: Récupérer les sous-domaines d'un NDD.
   - /tools/ddos
+  - /tools/random-image : génère 
   - /tools/password-generator: Générateur de mot de passe sécurisé.
   - /tools/identity-generator: Générer des identités fictives.
 - /admin: Pour la gestion des logs et les droits.
