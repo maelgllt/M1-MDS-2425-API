@@ -9,7 +9,8 @@
 
 ## Architecture
 
-- /auth: Routes pour l'authentification (connexion, inscription, gestion des tokens JWT).
+- /register: routes pour l'inscription
+- /login: routes pour la connexion
 - /tools: différentes fonctionnalités d'outils de hacking.
   - /tools/email-check: Vérification de l'existence d'une adresse mail.
   - /tools/spammer: Envoi de spamms.
