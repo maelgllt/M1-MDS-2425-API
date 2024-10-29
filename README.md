@@ -9,13 +9,26 @@
 
 ## Architecture
 
-- /auth: Routes pour l'authentification (connexion, inscription, gestion des tokens JWT).
+- /register: routes pour l'inscription
+- /login: routes pour la connexion
 - /tools: différentes fonctionnalités d'outils de hacking.
   - /tools/email-check: Vérification de l'existence d'une adresse mail.
   - /tools/spammer: Envoi de spamms.
   - /tools/password-check: Vérifier si un mot de passe fait partie des plus courants.
   - /tools/domain-info: Récupérer les sous-domaines d'un NDD.
   - /tools/ddos
+  - /tools/random-image : génère 
   - /tools/password-generator: Générateur de mot de passe sécurisé.
   - /tools/identity-generator: Générer des identités fictives.
 - /admin: Pour la gestion des logs et les droits.
+
+## Infos
+### Register
+Inscription avec un email, mot de passe (et roleId).
+```json
+{
+  "email": "admin@gmail.fr",
+  "password": "admin",
+  "roleId": 1
+}
+```
