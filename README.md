@@ -31,12 +31,8 @@ Inscription avec un email, mot de passe (et roleId).
   "password": "admin",
   "roleId": 1
 }
-<<<<<<< HEAD
-```
-=======
 ```
 Le roleId est optionel car si on ne le met pas, la valeur sera "2".  
 roleId : 1 => admin  
 roleId : 2 => user  
 
->>>>>>> 9bd1b5ba57d715d62846b93cd3fc917431b1c0bf
