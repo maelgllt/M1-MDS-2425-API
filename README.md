@@ -106,6 +106,8 @@ Donne tous les domaines et sous-domaines associés à un nom de domaine
 |-------|-----------------------|
 | domain  | mounier.paysdelaloire.e-lyco.fr/ |
 
+---
+
 ### Generate indentity (GET)
 Génère une identité fictive (prénom, nom, email, addresse, ville, pays, téléphone)
 
