@@ -47,12 +47,16 @@ Connexion avec un email et un mot de passe
 }
 ```
 
+---
+
 ### Email-check (GET)
 Vérifie si l'adresse email entrée existe
 
 | Key   | Value                              |
 |-------|------------------------------------|
 | email | mael.guilloteau@my-digital-school.org |
+
+---
 
 ### Spammer (POST)
 Outil de spammer d'email
@@ -65,6 +69,8 @@ Outil de spammer d'email
 }
 ```
 
+---
+
 ### Check password (GET)
 Vérifie si le mot de passe entré est sur la liste des plus courants
 
@@ -72,9 +78,41 @@ Vérifie si le mot de passe entré est sur la liste des plus courants
 |-------|-----------|
 | password | 123456 |
 
+---
+
 ### Crawler (GET)
 Retourne le maximum d'informations d'une personne entrée en paramètre
 
 | Key   | Value     |
 |-------|-----------|
 | name  | macron |
+
+---
+
+### DDOS (POST)
+Simule une attaque ddos sur un site donné en paramètre
+```json
+{
+    "targetUrl": "https://mounier.paysdelaloire.e-lyco.fr/",
+    "numberOfRequests": 50
+}
+```
+
+---
+
+### Domain info (GET)
+Donne tous les domaines et sous-domaines associés à un nom de domaine
+| Key   | Value     |
+|-------|-----------------------|
+| domain  | mounier.paysdelaloire.e-lyco.fr/ |
+
+### Generate indentity (GET)
+Génère une identité fictive (prénom, nom, email, addresse, ville, pays, téléphone)
+
+--- 
+
+### Generate password (GET)
+Génère un mot de passe aléatoire
+| Key   | Value     |
+|-------|------|
+| length  | 18 |
