@@ -23,7 +23,7 @@
 - /admin: Pour la gestion des logs et les droits.
 
 ## Infos
-### Register
+### Register (POST)
 Inscription avec un email, mot de passe (et roleId).
 ```json
 {
@@ -36,3 +36,43 @@ Le roleId est optionel car si on ne le met pas, la valeur sera "2".
 roleId : 1 => admin  
 roleId : 2 => user  
 
+### Login (POST)
+Connexion avec un email et un mot de passe
+```json
+{
+  "email": "admin@gmail.fr",
+  "password": "admin"
+}
+```
+
+### Email-check (GET)
+Vérifie si l'adresse email entrée existe
+
+| Key   | Value                              |
+|-------|------------------------------------|
+| email | mael.guilloteau@my-digital-school.org |
+
+### Spammer (POST)
+Outil de spammer d'email
+```json
+{
+  "email": "mael.guilloteau@my-digital-school.org",
+  "subject": "Sujet du spam",
+  "text": "Contenu du spam",
+  "count": 3
+}
+```
+
+### Check password (GET)
+Vérifie si le mot de passe entré est sur la liste des plus courants
+
+| Key   | Value                              |
+|-------|-----------|
+| password | 123456 |
+
+### Crawler (GET)
+Retourne le maximum d'informations d'une personne entrée en paramètre
+
+| Key   | Value     |
+|-------|-----------|
+| name  | macron |
