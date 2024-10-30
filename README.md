@@ -36,6 +36,8 @@ Le roleId est optionel car si on ne le met pas, la valeur sera "2".
 roleId : 1 => admin  
 roleId : 2 => user  
 
+---
+
 ### Login (POST)
 Connexion avec un email et un mot de passe
 ```json
