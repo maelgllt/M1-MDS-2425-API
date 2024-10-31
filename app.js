@@ -1,13 +1,10 @@
 const express = require('express')
 const axios = require('axios');
-const passwordGenerator = require('password-generator');
 const nodemailer = require('nodemailer');
 const { faker } = require('@faker-js/faker');
 const app = express()
 const port = 3000
 const { User, Role } = require('./models');
-const { hash, compare } = require('bcrypt');
-const morgan = require('morgan')
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 
@@ -30,12 +27,12 @@ app.get('/tools/email-check', authentication, async (req, res) => {
         const response = await axios.get(`https://api.hunter.io/v2/email-verifier?email=${email}&api_key=4c03cad5c7458f943080c7d3f04c999716023dfa`);
         const result = response.data.data;
         if (result.status === 'valid'){
-            res.send('l\'email existe')
+            res.send('email exists')
         } else {
-            res.send('l\'email n\'existe pas')
+            res.send('email doesn\'t exist')
         }
     } catch (error) {
-        res.status(500).send('erreur lors de la vérification de l\'email');
+        res.status(500).send('error while checking email');
     }
 });
 
@@ -51,29 +48,51 @@ app.get('/tools/password-check', authentication, async (req, res) => {
         const isCommon = commonPasswords.includes(password);
 
         if (isCommon) {
-            res.send('le mot de passe est courant.');
+            res.send('the password is current.');
         } else {
-            res.send('le mot de passe n\'est pas courant.');
+            res.send('the password is not current.');
         }
     } catch (error) {
-        console.error('erreur lors de la récupération de la liste des mots de passe :', error.message);
-        res.status(500).send('erreur lors de la vérification du mot de passe.');
+        console.error('error retrieving password list :', error.message);
+        res.status(500).send('password verification error.');
     }
 });
 
 app.get('/tools/generate-password', (req, res) => {
     const { length } = req.query;
-    const passwordLength = length ? parseInt(length, 10) : 12; // longueur par défaut 12 caractères
+    const passwordLength = length ? parseInt(length, 10) : 12;
 
     if (isNaN(passwordLength) || passwordLength < 8) {
-        return res.status(400).send('longueur de mot de passe invalide minimum 8 caractères.');
+        return res.status(400).send('Invalid password length. Minimum 8 characters.');
     }
 
-    const securePassword = passwordGenerator(passwordLength, true);
+    const generateComplexPassword = (length) => {
+        const lowerChars = 'abcdefghijklmnopqrstuvwxyz';
+        const upperChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const numbers = '0123456789';
+        const specialChars = '!@#$%^&*()_+~`|}{[]:;?><,./-=';
+        
+        const allChars = lowerChars + upperChars + numbers + specialChars;
+        let password = '';
+
+        password += lowerChars[Math.floor(Math.random() * lowerChars.length)];
+        password += upperChars[Math.floor(Math.random() * upperChars.length)];
+        password += numbers[Math.floor(Math.random() * numbers.length)];
+        password += specialChars[Math.floor(Math.random() * specialChars.length)];
+
+        for (let i = password.length; i < length; i++) {
+            password += allChars[Math.floor(Math.random() * allChars.length)];
+        }
+
+        return password.split('').sort(() => 0.5 - Math.random()).join('');
+    };
+
+    const securePassword = generateComplexPassword(passwordLength);
     res.send(`Password: ${securePassword}`);
 });
 
-app.get('/generate-identity', (req, res) => {
+
+app.get('/tools/generate-identity', (req, res) => {
     const identity = {
         firstName: faker.person.firstName(),
         lastName: faker.person.lastName(),
@@ -90,7 +109,7 @@ app.get('/generate-identity', (req, res) => {
 app.get('/tools/domain-info', authentication, async (req, res) => {
     const { domain } = req.query;
     if (!domain) {
-        return res.status(400).send('nom de domaine requis.');
+        return res.status(400).send('domain name required.');
     }
 
     try {
@@ -102,8 +121,8 @@ app.get('/tools/domain-info', authentication, async (req, res) => {
 
         res.json(response.data);
     } catch (error) {
-        console.error('erreur lors de la récupération des sous-domaines:', error.message);
-        res.status(500).send('erreur lors de la récupération des sous-domaines.');
+        console.error('error when retrieving sub-domains.', error.message);
+        res.status(500).send('error when retrieving sub-domains.');
     }
 });
 
@@ -111,7 +130,7 @@ app.post('/tools/ddos', async (req, res) => {
     const { targetUrl, numberOfRequests } = req.body;
 
     if (!targetUrl || !numberOfRequests) {
-        return res.status(400).send('URL cible et nombre de requêtes requis.');
+        return res.status(400).send('Target URL and number of requests required.');
     }
 
     const results = [];
@@ -125,7 +144,7 @@ app.post('/tools/ddos', async (req, res) => {
         }
     }
 
-    res.json({ message: 'Simulation terminée.', results });
+    res.json({ message: 'Simulation complete.', results });
 });
 
 app.get('/tools/crawler', async (req, res) => {
@@ -145,11 +164,10 @@ app.get('/tools/crawler', async (req, res) => {
 
         res.json(response.data);
     } catch (error) {
-        console.error('Erreur lors de la récupération des informations :', error.message);
-        res.status(500).send('Erreur lors de la récupération des informations ou le nombre maximal de requêtes est atteint');
+        console.error('Error while retrieving information :', error.message);
+        res.status(500).send('Error retrieving information or maximum number of requests reached');
     }
 });
-
 
 
 // app.get('/protected-route', authentication, (req, res) => {
@@ -163,7 +181,7 @@ app.get('/tools/crawler', async (req, res) => {
 app.post('/register', async (req, res, next) => {
     try {
         let { email, password, roleId } = req.body;
-        roleId = roleId || 2; // Par défaut, c'est 'user'
+        roleId = roleId || 2;
 
         let user = await User.create({
             email, 
@@ -205,22 +223,22 @@ let blacklist = [];
 app.post('/logout', authentication, (req, res) => {
     // Ajouter le token à la liste noire
     blacklist.push(req.headers.authorization.split(' ')[1]); // Récupère le token Bearer
-    res.status(200).json({ message: "Déconnexion réussie." });
+    res.status(200).json({ message: "Successful disconnection." });
 });
 
 app.post('/tools/spammer', async (req, res) => {
     const { email, subject, text, count } = req.body;
     
     if (!email || !subject || !text || !count) {
-        return res.status(400).send('Tous les champs sont requis (email, subject, text, count)');
+        return res.status(400).send('All fields are required (email, subject, text, count)');
     }
 
     try {
         await sendSpamEmail(email, subject, text, parseInt(count));
-        res.status(200).send(`${count} emails envoyés avec succès à ${email}`);
+        res.status(200).send(`${count} emails successfully sent to ${email}`);
     } catch (error) {
-        console.error('Erreur lors de l\'envoi des emails :', error);
-        res.status(500).send('Erreur lors de l\'envoi des emails.');
+        console.error('Error when sending emails:', error);
+        res.status(500).send('Error when sending emails.');
     }
 });
 
@@ -316,9 +334,9 @@ async function sendSpamEmail(email, subject, text, numOfEmails) {
   
       try {
         await transporter.sendMail(mailOptions);
-        console.log(`Email ${i + 1} envoyé avec succès`);
+        console.log(`Email ${i + 1} sent successfully`);
       } catch (error) {
-        console.error(`Erreur lors de l'envoi de l'email ${i + 1}:`, error);
+        console.error(`Error sending email ${i + 1}:`, error);
       }
     }
   }
