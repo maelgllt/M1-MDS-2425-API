@@ -11,15 +11,14 @@
 
 - /register: routes pour l'inscription
 - /login: routes pour la connexion
-- /tools: différentes fonctionnalités d'outils de hacking.
-  - /tools/email-check: Vérification de l'existence d'une adresse mail.
-  - /tools/spammer: Envoi de spamms.
-  - /tools/password-check: Vérifier si un mot de passe fait partie des plus courants.
-  - /tools/domain-info: Récupérer les sous-domaines d'un NDD.
-  - /tools/ddos
-  - /tools/random-image : génère 
-  - /tools/password-generator: Générateur de mot de passe sécurisé.
-  - /tools/identity-generator: Générer des identités fictives.
+- /tools/email-check: Vérification de l'existence d'une adresse mail.
+- /tools/spammer: Envoi de spamms.
+- /tools/password-check: Vérifier si un mot de passe fait partie des plus courants.
+- /tools/domain-info: Récupérer les sous-domaines d'un NDD.
+- /tools/ddos : simule une attaque ddos
+- /tools/random-image : changement d'image random
+- /tools/generate-password: Générateur de mot de passe sécurisé.
+- /tools/generate-identity: Générer des identités fictives.
 - /admin: Pour la gestion des logs et les droits.
 
 ## Infos
