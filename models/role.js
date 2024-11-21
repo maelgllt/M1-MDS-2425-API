@@ -1,12 +1,16 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
   class Role extends Model {
     static associate(models) {
-      Role.hasMany(models.User, { foreignKey: 'roleId' }); // un rôle peut avoir plusieurs utilisateurs
+      Role.belongsToMany(models.Permission, {
+        through: models.RolePermission,
+        foreignKey: 'roleId',
+        otherKey: 'permissionId',
+      });
+      
+      Role.hasMany(models.User, { foreignKey: 'roleId' });
     }
   }
 

