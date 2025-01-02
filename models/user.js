@@ -4,17 +4,17 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
-      User.belongsTo(models.Role, { foreignKey: 'roleId' }); // Un utilisateur appartient à un rôle
+      User.belongsTo(models.Role, { foreignKey: 'roleId' });
     }
   }
 
   User.init({
       email: DataTypes.STRING,
       password: DataTypes.STRING,
-      roleId: { // Assurez-vous d'avoir un champ roleId
-          type: DataTypes.INTEGER, // ou DataTypes.STRING selon votre définition de Role
+      roleId: {
+          type: DataTypes.INTEGER,
           allowNull: false,
-          defaultValue: 2 // Ou tout autre valeur qui correspond à 'user'
+          defaultValue: 2 // pour le user
       }
   }, {
       sequelize,
