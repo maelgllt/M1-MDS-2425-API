@@ -174,6 +174,35 @@
         }
       }
     },
+    "/tools/random-image": {
+      "get": {
+        "summary": "Generate a random image",
+        "description": "Fetches a random image from thispersondoesnotexist.com and returns it as a JPEG image.",
+        "responses": {
+          "200": {
+            "description": "Successfully fetched and returned a random image",
+            "content": {
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary",
+                  "example": "Binary data representing the image"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, missing or invalid token"
+          },
+          "403": {
+            "description": "Forbidden, insufficient permissions"
+          },
+          "500": {
+            "description": "Internal server error while generating the image"
+          }
+        }
+      }
+    },
     "/tools/domain-info": {
       "get": {
         "summary": "Retrieve information about subdomains for a given domain",
@@ -231,6 +260,155 @@
           },
           "500": {
             "description": "Error when retrieving sub-domains"
+          }
+        }
+      }
+    },
+     "/tools/crawler": {
+      "get": {
+        "summary": "Retrieve social media data for a given name",
+        "description": "This endpoint queries an external social media search API to fetch data about the given name.",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "The name to search for",
+            "schema": {
+              "type": "string",
+              "example": "John Doe"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "platform": {
+                            "type": "string",
+                            "description": "The social media platform"
+                          },
+                          "profile_url": {
+                            "type": "string",
+                            "description": "URL to the social media profile"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request, missing 'name' query parameter"
+          },
+          "500": {
+            "description": "Internal server error, error while retrieving data from the external API or exceeding the maximum request limit"
+          }
+        }
+      }
+    },
+    "/swagger": {
+      "get": {
+        "summary": "Serve the Swagger JSON file",
+        "description": "This endpoint serves the Swagger JSON file that contains the API documentation.",
+        "responses": {
+          "200": {
+            "description": "Successfully returned the Swagger JSON documentation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error, error serving the Swagger JSON file"
+          }
+        }
+      }
+    },
+    "/tools/phishing": {
+      "get": {
+        "summary": "Serve phishing page",
+        "description": "Serves an HTML phishing page to the client.",
+        "responses": {
+          "200": {
+            "description": "HTML page successfully served"
+          },
+          "401": {
+            "description": "Unauthorized, missing or invalid token"
+          },
+          "403": {
+            "description": "Forbidden, insufficient permissions"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/tools/phishing/capture": {
+      "post": {
+        "summary": "Capture phishing data",
+        "description": "Saves submitted email and password from the phishing page into a local file.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "example@domain.com",
+                    "description": "Captured email address"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password123",
+                    "description": "Captured password"
+                  }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Data successfully captured and saved to a local file",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": "Captured email and password successfully saved to captures.txt"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request, both email and password are required"
+          },
+          "401": {
+            "description": "Unauthorized, missing or invalid token"
+          },
+          "403": {
+            "description": "Forbidden, insufficient permissions"
+          },
+          "500": {
+            "description": "Internal server error when saving data to file"
           }
         }
       }
@@ -296,6 +474,7 @@
     "/register": {
       "post": {
         "summary": "Register a new user",
+        "description": "This endpoint allows you to register a new user by providing their email and password. The role of the user can also be specified (roleId), but if not provided, the user will be assigned the default role of 'user' (roleId = 2). Admins can register users by setting roleId to 1.",
         "requestBody": {
           "required": true,
           "content": {
@@ -304,13 +483,19 @@
                 "type": "object",
                 "properties": {
                   "email": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Email address of the user (required). This will be used for user authentication and communication.",
+                    "example": "admin@gmail.fr"
                   },
                   "password": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Password for the new user (required). This should be a strong password for securing the account.",
+                    "example": "admin"
                   },
                   "roleId": {
-                    "type": "integer"
+                    "type": "integer",
+                    "description": "Role ID of the user (optional). If provided, it should be 1 for admin or 2 for user. If not provided, it defaults to 2 (user).",
+                    "example": 1
                   }
                 },
                 "required": ["email", "password"]
@@ -319,28 +504,30 @@
           }
         },
         "responses": {
-            "201": {
-              "description": "User created",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "type": "integer"
-                      },
-                      "email": {
-                        "type": "string"
-                      }
+          "201": {
+            "description": "User successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "description": "The unique ID of the newly created user"
+                    },
+                    "email": {
+                      "type": "string",
+                      "description": "The email address of the newly created user"
                     }
                   }
                 }
               }
-            },
-            "400": {
-              "description": "Bad request"
             }
+          },
+          "400": {
+            "description": "Bad request, missing or invalid input"
           }
+        }
       }
     },
     "/login": {
@@ -405,11 +592,6 @@
     "/logout": {
       "post": {
         "summary": "Logout a user by invalidating their access token",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
         "responses": {
           "200": {
             "description": "User successfully logged out",
@@ -436,11 +618,6 @@
     "/tools/spammer": {
       "post": {
         "summary": "Send a specified number of spam emails to a given email address",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -455,12 +632,12 @@
                   },
                   "subject": {
                     "type": "string",
-                    "example": "Sujet du spam",
+                    "example": "Spam subject",
                     "description": "Subject of the spam email"
                   },
                   "text": {
                     "type": "string",
-                    "example": "Contenu du spam",
+                    "example": "Spam content",
                     "description": "Text content of the spam email"
                   },
                   "count": {
