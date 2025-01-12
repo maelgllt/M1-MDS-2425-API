@@ -13,16 +13,16 @@
 
 ## Cloner le projet
 
-    ```bash
-    git clone https://github.com/maelgllt/M1-MDS-2425-API.git
-    ```
+```bash
+git clone https://github.com/maelgllt/M1-MDS-2425-API.git
+```
 
 ## Installer les dépendances
 Une fois dans le dossier du projet, installer les dépendances Node.js en utilisant la commande suivante :
 
-    ```bash
-    npm install
-    ```
+```bash
+npm install
+```
 
 ## Importer la base de données
 1. Avoir installé MySQL installé
@@ -32,40 +32,40 @@ Une fois dans le dossier du projet, installer les dépendances Node.js en utilis
 
 3. Se connecter au serveur MySQL avec la commande :
 
-   ```bash
-   mysql -u [username] -p
-   ```
+```bash
+mysql -u [username] -p
+```
 
 Par défaut, le username est : root
 
 4. Créez une base de données vide nommée **hackr_api** :
 
-    ```sql
-    CREATE DATABASE hackr_api;
-    ```
+```sql
+CREATE DATABASE hackr_api;
+```
 
 Vérifier que la base est créee : 
 
-    ```sql
-    SHOW DATABASES;
-    ```
+```sql
+SHOW DATABASES;
+```
 
 5. Importer le fichier SQL
 - Quitter MySQL
 
-    ```bash
-    exit
-    ```
+```bash
+exit
+```
 
 - Exécutez cette commande pour importer le fichier dump.sql dans la base de données hackr_api :
 
-    ```bash
-    mysql -u [username] -p hackr_api < chemin/vers/dump.sql
-    ```
+```bash
+mysql -u [username] -p hackr_api < chemin/vers/dump.sql
+```
 
 ## Démarrer le serveur
 Dans un terminal, entrer la commande :
 
-    ```bash
-    node app.js
-    ```
+```bash
+node app.js
+```
