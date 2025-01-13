@@ -10,8 +10,10 @@
 ## Prérequis
 - Node.js (https://nodejs.org/fr)
 - MySQL (https://dev.mysql.com/downloads/)
+- Git (https://git-scm.com/downloads)
 
 ## Cloner le projet
+Créer un espace pour cloner le projet
 
 ```bash
 git clone https://github.com/maelgllt/M1-MDS-2425-API.git
@@ -25,8 +27,8 @@ npm install
 ```
 
 ## Importer la base de données
-1. Avoir installé MySQL installé
-    - Ajoutez le chemin de mysql à la variable d'environnement PATH si nécessaire. Souvent le chemin est celui-ci : "C:\Program Files\MySQL\MySQL Server X.X\bin\mysql.exe"
+1. Avoir installé MySQL
+    - SI NECESSAIRE, ajouter le chemin de mysql à la variable d'environnement PATH. Souvent le chemin est celui-ci : "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe"
 
 2. Ouvrir un terminal ou une invite de commande (cmd).
 
