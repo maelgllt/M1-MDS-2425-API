@@ -11,8 +11,11 @@
 
 Fichier json pour l'environnement de test "hackr_api". Les routes sont organisées en collection et le bearer est automatiquement transmis dans toutes les requêtes.
 
-[hackr_api.postman_environment.json](hackr_api.postman_environment.json)
-
+[hackr_api.postman_environment.json](hackr_api.postman_environment.json)       
+      
+        
+        
+# INSTALLATION
 ## Prérequis
 - Node.js (https://nodejs.org/fr)
 - MySQL (https://dev.mysql.com/downloads/)
