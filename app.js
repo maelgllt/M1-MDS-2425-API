@@ -260,6 +260,7 @@ app.get('/tools/generate-password', authentication, authorize('generate-password
     res.send(`Password: ${securePassword}`);
 });
 
+// Test
 app.get('/protected-route', authentication, (req, res) => {
     if (req.user.role !== 'admin') {
         return res.status(403).json({ message: "Access forbidden" });
@@ -323,7 +324,6 @@ app.post('/logout', authentication, (req, res) => {
 app.get('/swagger', (req, res) => {
     res.sendFile(path.join(__dirname, 'swagger.json'));
 })
-
 
 
 
