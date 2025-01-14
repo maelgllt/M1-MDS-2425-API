@@ -10,6 +10,7 @@ const { User, Role } = require('./models');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const authorize = require('./authorize');
+require('dotenv').config();
 
 app.use(express.urlencoded({extended : true}))
 app.use(express.json())
@@ -29,7 +30,8 @@ app.get('/tools/email-check', authentication, authorize('email-check'), async (r
     }
 
     try {
-        const response = await axios.get(`https://api.hunter.io/v2/email-verifier?email=${email}&api_key=4c03cad5c7458f943080c7d3f04c999716023dfa`);
+        const apiKey = process.env.HUNTER_API_KEY;
+        const response = await axios.get(`https://api.hunter.io/v2/email-verifier?email=${email}&api_key=${apiKey}`);
         const result = response.data.data;
         if (result.status === 'valid'){
             res.send('email exists')
@@ -144,9 +146,10 @@ app.get('/tools/domain-info', authentication, authorize('domain-info'), async (r
     }
 
     try {
+        const apiKey = process.env.DOMAIN-INFO_API_KEY;
         const response = await axios.get(`https://api.securitytrails.com/v1/domain/${domain}/subdomains`, {
             headers: {
-                'APIKEY': 'zXX3d0vUSreC-9KY2-SwAQULQCmkhDnv' 
+                'APIKEY': apiKey
             }
         });
 
@@ -213,10 +216,11 @@ app.get('/tools/crawler', authentication, authorize('crawler'), async (req, res)
     }
 
     try {
+        const apiKey = process.env.CRAWLER_API_KEY;
         const response = await axios.get(`https://api.social-searcher.com/v2/search`, {
             params: {
                 q: name,
-                api_key: 'f56047486e056256a67cafe1bcb6dc25',
+                api_key: apiKey,
             },
         });
 
@@ -398,12 +402,13 @@ async function authentication(req, res, next) {
     }
 }
 
+const transporter_api_key = process.env.TRANSPORTER_API_KEY;
 // Configuration du transporteur pour l'envoi d'emails
 let transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
       user: 'hackrapi42@gmail.com',
-      pass: 'xzft yepj ppog erqi',
+      pass: transporter_api_key,
     }
 });
 
@@ -424,7 +429,7 @@ async function sendSpamEmail(email, subject, text, numOfEmails) {
         console.error(`Error sending email ${i + 1}:`, error);
       }
     }
-  }
+}
 
 
 module.exports = app
