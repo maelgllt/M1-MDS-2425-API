@@ -597,15 +597,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://mael.guilloteau.angers.mds-project.fr/swagger",
+							"raw": "http://localhost:3000/swagger",
 							"protocol": "http",
 							"host": [
-								"mael",
-								"guilloteau",
-								"angers",
-								"mds-project",
-								"fr"
+								"localhost"
 							],
+							"port": "3000",
 							"path": [
 								"swagger"
 							]
