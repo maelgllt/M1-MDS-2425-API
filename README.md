@@ -29,6 +29,10 @@ git clone https://github.com/maelgllt/M1-MDS-2425-API.git
 Une fois dans le dossier du projet, installer les dépendances Node.js en utilisant la commande suivante :
 
 ```bash
+cd .\M1-MDS-2425-API\
+```
+
+```bash
 npm install
 ```
 
@@ -72,7 +76,7 @@ mysql -u [username] -p hackr_api < chemin/vers/dump.sql
 ```
 
 ## Démarrer le serveur
-Dans un terminal, entrer la commande :
+Dans un terminal, entrer la commande suivante pour démarrer le serveur (⚠️ se placer dans le dossier du projet) :
 
 ```bash
 node app.js
@@ -80,7 +84,7 @@ node app.js
 
 ## .env et logs
 
-Récupérer le fichier .env envoyé sur Teams et le placer à la racine du projet. Logs pour se connecter en tant qu'admin et en tant que user également envoyé sur Teams.
+Récupérer le fichier .env envoyé sur Teams et le placer à la racine du projet. Des logs pour se connecter en tant qu'admin et en tant que user également sont envoyés sur Teams.
 
 ## Postman
 
