@@ -88,9 +88,13 @@ Récupérer le fichier .env envoyé sur Teams et le placer à la racine du proje
 
 ## Postman
 
-Fichier json pour l'environnement de test "hackr_api". Les routes sont organisées en collection et le bearer est automatiquement transmis dans toutes les requêtes.
+Fichier json pour l'environnement "hackr_api" qui contient une variable (access_token) permettetant la transmission automatique du bearer dans toutes les requêtes.   
+[hackr_api.postman_environment.json](Postman/hackr_api.postman_environment.json)
 
-[hackr_api.postman_environment.json](hackr_api.postman_environment.json)
+Fichier json pour la collection contenant l'ensemble des routes.   
+[hackr_api.postman_collection.json](Postman/hackr_api.postman_collection.json)
+
+**Lors des tests des requêtes, il faut sélectionner l'environnement "hackr_api"**
 
 ## Configuration
 
