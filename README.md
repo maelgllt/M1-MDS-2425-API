@@ -6,14 +6,6 @@
 - JWT (Json Web Token) : pour l'authentification
 - BDD : MySQL
 - Swagger : pour la documentation
-
-## Postman
-
-Fichier json pour l'environnement de test "hackr_api". Les routes sont organisées en collection et le bearer est automatiquement transmis dans toutes les requêtes.
-
-[hackr_api.postman_environment.json](hackr_api.postman_environment.json)       
-      
-        
         
 # INSTALLATION
 ## Prérequis
@@ -80,3 +72,21 @@ Dans un terminal, entrer la commande :
 ```bash
 node app.js
 ```
+
+## Postman
+
+Fichier json pour l'environnement de test "hackr_api". Les routes sont organisées en collection et le bearer est automatiquement transmis dans toutes les requêtes.
+
+[hackr_api.postman_environment.json](hackr_api.postman_environment.json)
+
+## Configuration
+
+Les endpoints suivants sont accessibles sans avoir besoin de se login :
+- /register
+- /login
+- /swagger
+
+Les endpoints suivants sont accessibles par les users :
+- /email-check
+
+Les admins ont accès à l'ensemble des endpoints.
