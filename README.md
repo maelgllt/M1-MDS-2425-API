@@ -6,6 +6,11 @@
 - JWT (Json Web Token) : pour l'authentification
 - BDD : MySQL
 - Swagger : pour la documentation
+
+## Mise en ligne
+
+J'ai déployé mon app sur mon VPS mais je ne peux plus m'y connecter via ssh (car j'ai dû fermer le port 22 sans faire exprès). J'ai donc pas eu le temps de mettre ma bdd dessus. (Seul le endpoint du swagger est accessible : [/swagger](http://mael.guilloteau.angers.mds-project.fr/swagger))   
+**Il faut donc installer l'api.**
         
 # INSTALLATION
 ## Prérequis
@@ -22,6 +27,10 @@ git clone https://github.com/maelgllt/M1-MDS-2425-API.git
 
 ## Installer les dépendances
 Une fois dans le dossier du projet, installer les dépendances Node.js en utilisant la commande suivante :
+
+```bash
+cd .\M1-MDS-2425-API\
+```
 
 ```bash
 npm install
@@ -67,17 +76,25 @@ mysql -u [username] -p hackr_api < chemin/vers/dump.sql
 ```
 
 ## Démarrer le serveur
-Dans un terminal, entrer la commande :
+Dans un terminal, entrer la commande suivante pour démarrer le serveur (⚠️ se placer dans le dossier du projet) :
 
 ```bash
 node app.js
 ```
 
+## .env et logs
+
+Récupérer le fichier .env envoyé sur Teams et le placer à la racine du projet. Des logs pour se connecter en tant qu'admin et en tant que user également sont envoyés sur Teams.
+
 ## Postman
 
-Fichier json pour l'environnement de test "hackr_api". Les routes sont organisées en collection et le bearer est automatiquement transmis dans toutes les requêtes.
+Fichier json pour l'environnement "hackr_api" qui contient une variable (access_token) permettetant la transmission automatique du bearer dans toutes les requêtes.   
+[hackr_api.postman_environment.json](Postman/hackr_api.postman_environment.json)
 
-[hackr_api.postman_environment.json](hackr_api.postman_environment.json)
+Fichier json pour la collection contenant l'ensemble des routes.   
+[hackr_api.postman_collection.json](Postman/hackr_api.postman_collection.json)
+
+**Lors des tests des requêtes, il faut sélectionner l'environnement "hackr_api"**
 
 ## Configuration
 
