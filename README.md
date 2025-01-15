@@ -18,6 +18,10 @@ J'ai déployé mon app sur mon VPS mais je ne peux plus m'y connecter via ssh (c
 - MySQL (https://dev.mysql.com/downloads/)
 - Git (https://git-scm.com/downloads)
 
+## .env et logs
+
+Récupérer le fichier .env envoyé sur Teams et le placer à la racine du projet. Des logs pour se connecter en tant qu'admin et en tant que user également sont envoyés sur Teams.
+
 ## Cloner le projet
 Créer un espace pour cloner le projet
 
@@ -81,10 +85,6 @@ Dans un terminal, entrer la commande suivante pour démarrer le serveur (⚠️ 
 ```bash
 node app.js
 ```
-
-## .env et logs
-
-Récupérer le fichier .env envoyé sur Teams et le placer à la racine du projet. Des logs pour se connecter en tant qu'admin et en tant que user également sont envoyés sur Teams.
 
 ## Postman
 
